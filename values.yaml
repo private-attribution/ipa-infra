@@ -1,0 +1,3 @@
+helperImage: "ipa:no-command"
+serviceNodePort: 30001
+port: 3000

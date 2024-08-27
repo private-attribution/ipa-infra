@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-helper-deployment
+  labels:
+    app: {{ .Release.Name }}-helper
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-helper
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-helper
+    spec:
+      containers:
+        - name: {{ .Release.Name }}-helper
+          image: {{ .Values.helperImage }}
+          imagePullPolicy: Never
+          command: ["ipa-helper"]
+          args: ["--identity", "1",
+            "--port", {{ .Values.port | quote }},
+            "--network", "/etc/ipa/network.toml", 
+            "--tls-cert", "/etc/ipa/tls.pem",
+            "--tls-key", "/etc/ipa/keys/tls.key",
+            "--mk-public-key", "/etc/ipa/mk.pub",
+            "--mk-private-key", "/etc/ipa/keys/mk.key"]
+          ports:
+            - containerPort: {{ .Values.port }}
+          volumeMounts:
+            - name: {{ .Release.Name }}-configs
+              mountPath: /etc/ipa
+            - name: {{ .Release.Name }}-keys
+              mountPath: /etc/ipa/keys
+      volumes:
+        - name: {{ .Release.Name }}-configs
+          configMap:
+            name: {{ .Release.Name }}-configmap
+        - name: {{ .Release.Name }}-keys
+          secret:
+            secretName: {{ .Release.Name }}-secrets
