@@ -14,10 +14,12 @@ spec:
       labels:
         app: {{ .Release.Name }}-helper
     spec:
+      imagePullSecrets:
+        - name: {{ .Release.Name }}-ghcr
       containers:
         - name: {{ .Release.Name }}-helper
           image: {{ .Values.helperImage }}
-          imagePullPolicy: Never
+          imagePullPolicy: Always
           command: ["ipa-helper"]
           args: ["--identity", "1",
             "--port", {{ .Values.port | quote }},

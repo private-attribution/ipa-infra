@@ -44,8 +44,8 @@ cp -r config ../../../ipa-infra/
 After your Minukube is set, inside the `ipa-infra` directory, run the following to start a helper:
 ```
 helm install h1 .
-helm install h2 . --values serviceNodePort=30002
-helm install h3 . --values serviceNodePort=30003
+helm install h2 . --set serviceNodePort=30002
+helm install h3 . --set serviceNodePort=30003
 ```
 
 Note the Helm's `Release.Name` is used to separate all resources for each helper.
