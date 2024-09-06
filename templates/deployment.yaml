@@ -14,6 +14,8 @@ spec:
       labels:
         app: {{ .Release.Name }}-helper
     spec:
+      nodeSelector:
+        releaseName: {{ .Release.Name }}
       imagePullSecrets:
         - name: {{ .Release.Name }}-ghcr
       containers:
@@ -21,7 +23,7 @@ spec:
           image: {{ .Values.helperImage }}
           imagePullPolicy: Always
           command: ["ipa-helper"]
-          args: ["--identity", "1",
+          args: ["--identity", "{{ trimPrefix "h" .Release.Name }}",
             "--port", {{ .Values.port | quote }},
             "--network", "/etc/ipa/network.toml", 
             "--tls-cert", "/etc/ipa/tls.pem",
