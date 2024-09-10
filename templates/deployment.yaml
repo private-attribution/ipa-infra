@@ -31,7 +31,8 @@ spec:
             "--mk-public-key", "/etc/ipa/mk.pub",
             "--mk-private-key", "/etc/ipa/keys/mk.key"]
           ports:
-            - containerPort: {{ .Values.port }}
+            - hostPort: {{ .Values.port }}
+              containerPort: {{ .Values.port }}
           volumeMounts:
             - name: {{ .Release.Name }}-configs
               mountPath: /etc/ipa
