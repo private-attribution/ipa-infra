@@ -7,7 +7,7 @@ spec:
   type: ClusterIP
   clusterIP: None
   selector:
-    app: {{ .Release.Name }}-helper
+    app: {{ .Release.Name }}-helper-shard
   ports:
     - name: https
       port: {{ .Values.externalPort }}

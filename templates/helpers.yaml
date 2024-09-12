@@ -1,38 +1,41 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: {{ .Release.Name }}-helper-deployment
+  name: {{ .Release.Name }}-helper-shard
   labels:
-    app: {{ .Release.Name }}-helper
+    app: {{ .Release.Name }}-helper-shard
 spec:
-  replicas: 1
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-helper
+      app: {{ .Release.Name }}-helper-shard
+  serviceName: {{ .Release.Name }}-helper-shard
+  replicas: 1 # number of shards
+  minReadySeconds: 10 # by default is 0
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}-helper
+        app: {{ .Release.Name }}-helper-shard # has to match .spec.selector.matchLabels
     spec:
+      terminationGracePeriodSeconds: 10
       nodeSelector:
         releaseName: {{ .Release.Name }}
       imagePullSecrets:
         - name: {{ .Release.Name }}-ghcr
       containers:
-        - name: {{ .Release.Name }}-helper
+        - name: {{ .Release.Name }}-helper-shard
           image: {{ .Values.helperImage }}
           imagePullPolicy: Always
           command: ["ipa-helper"]
           args: ["--identity", "{{ trimPrefix "h" .Release.Name }}",
-            "--port", {{ .Values.port | quote }},
+            "--port", {{ .Values.externalPort | quote }},
             "--network", "/etc/ipa/network.toml", 
             "--tls-cert", "/etc/ipa/tls.pem",
             "--tls-key", "/etc/ipa/keys/tls.key",
             "--mk-public-key", "/etc/ipa/mk.pub",
             "--mk-private-key", "/etc/ipa/keys/mk.key"]
           ports:
-            - hostPort: {{ .Values.port }}
-              containerPort: {{ .Values.port }}
+            - hostPort: {{ .Values.externalPort }}
+              containerPort: {{ .Values.externalPort }}
           volumeMounts:
             - name: {{ .Release.Name }}-configs
               mountPath: /etc/ipa

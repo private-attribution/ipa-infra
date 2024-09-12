@@ -4,7 +4,7 @@ apiVersion: v1
 metadata:
   name: {{ .Release.Name }}-ghcr
   labels:
-    app: {{ .Release.Name }}-helper
+    app: {{ .Release.Name }}-helper-shard
 stringData:
   .dockerconfigjson: |
 {{ .Files.Get "config/ghcr_auth.json" | indent 4 }}
