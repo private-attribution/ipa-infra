@@ -8,15 +8,15 @@ metadata:
 managedNodeGroups:
   - name: helper1
     labels: { releaseName: h1 }
-    instanceType: t3.medium
+    instanceType: c6id.8xlarge
     desiredCapacity: 1
   - name: helper2
     labels: { releaseName: h2 }
-    instanceType: t3.medium
+    instanceType: c6id.8xlarge
     desiredCapacity: 1
   - name: helper3
     labels: { releaseName: h3 }
-    instanceType: t3.medium
+    instanceType: c6id.8xlarge
     desiredCapacity: 1
 
 iam:
