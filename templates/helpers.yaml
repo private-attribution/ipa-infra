@@ -33,6 +33,9 @@ spec:
             "--tls-key", "/etc/ipa/keys/tls.key",
             "--mk-public-key", "/etc/ipa/mk.pub",
             "--mk-private-key", "/etc/ipa/keys/mk.key"]
+          env:
+            - name: RUST_LOG
+              value: {{ .Values.rustLog }}
           ports:
             - hostPort: {{ .Values.externalPort }}
               containerPort: {{ .Values.externalPort }}
