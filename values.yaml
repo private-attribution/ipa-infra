@@ -1,5 +1,5 @@
-helperImage: "ghcr.io/private-attribution/ipa/ipa-helper:berkhoff-sd-mt-ra"
+helperImage: "ghcr.io/private-attribution/ipa/ipa-helper:main"
 externalPort: 443
 port: 3000
-rustLog: "debug,h2=error"
+rustLog: "debug,tower_http=error,hyper_util=error,rustls=error,h2=error"
 
