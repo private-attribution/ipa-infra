@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: report-collector-deployment
+  labels:
+    app: report-collector
+spec:
+  selector:
+    matchLabels:
+      app: report-collector
+  template:
+    metadata:
+      labels:
+        app: report-collector
+    spec:
+      imagePullSecrets:
+        - name: {{ .Release.Name }}-ghcr
+      containers:
+      - name: report-collector
+        image: {{ .Values.helperImage }}
+        imagePullPolicy: Always
+        command: ["tail", "-f", "/dev/null"]
