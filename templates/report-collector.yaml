@@ -17,6 +17,6 @@ spec:
         - name: {{ .Release.Name }}-ghcr
       containers:
       - name: report-collector
-        image: {{ .Values.helperImage }}
+        image: {{ .Values.rcImage }}
         imagePullPolicy: Always
         command: ["tail", "-f", "/dev/null"]

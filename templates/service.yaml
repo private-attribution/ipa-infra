@@ -9,5 +9,7 @@ spec:
   selector:
     app: {{ .Release.Name }}-helper-shard
   ports:
-    - name: https
-      port: {{ .Values.externalPort }}
+    - name: mpc
+      port: {{ .Values.mpcPort }}
+    - name: shard
+      port: {{ .Values.shardPort }}

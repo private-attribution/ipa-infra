@@ -27,7 +27,10 @@ spec:
           imagePullPolicy: Always
           command: ["ipa-helper"]
           args: ["--identity", "{{ trimPrefix "h" .Release.Name }}",
-            "--port", {{ .Values.externalPort | quote }},
+            "--port", {{ .Values.mpcPort | quote }},
+            "--shard-count", "1",
+            "--shard-index", $(SHARD_INDEX),
+            "--shard-port", {{ .Values.shardPort | quote }},
             "--network", "/etc/ipa/network.toml", 
             "--tls-cert", "/etc/ipa/tls.pem",
             "--tls-key", "/etc/ipa/keys/tls.key",
@@ -36,9 +39,15 @@ spec:
           env:
             - name: RUST_LOG
               value: {{ .Values.rustLog }}
+            - name: SHARD_INDEX
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['apps.kubernetes.io/pod-index']
           ports:
-            - hostPort: {{ .Values.externalPort }}
-              containerPort: {{ .Values.externalPort }}
+            - hostPort: {{ .Values.mpcPort }}
+              containerPort: {{ .Values.mpcPort }}
+            - hostPort: {{ .Values.shardPort }}
+              containerPort: {{ .Values.shardPort }}
           volumeMounts:
             - name: {{ .Release.Name }}-configs
               mountPath: /etc/ipa

@@ -1,5 +1,6 @@
 helperImage: "ghcr.io/private-attribution/ipa/ipa-helper:main"
-externalPort: 443
-port: 3000
+rcImage: "ghcr.io/private-attribution/ipa/rc:main"
+mpcPort: 443
+shardPort: 1443
 rustLog: "debug,tower_http=error,hyper_util=error,rustls=error,h2=error"
 
