@@ -9,7 +9,7 @@ spec:
     matchLabels:
       app: {{ .Release.Name }}-helper-shard
   serviceName: {{ .Release.Name }}-helper-shard
-  replicas: 1 # number of shards
+  replicas: {{ .Values.shardCount }}
   minReadySeconds: 10 # by default is 0
   template:
     metadata:

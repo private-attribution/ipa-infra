@@ -6,6 +6,7 @@ spec:
 # https://kubernetes.io/docs/concepts/services-networking/service/#headless-services
   type: ClusterIP
   clusterIP: None
+  externalName: {{ .Release.Name }}-ips
   selector:
     app: {{ .Release.Name }}-helper-shard
   ports:

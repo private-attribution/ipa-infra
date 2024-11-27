@@ -2,5 +2,6 @@ helperImage: "ghcr.io/private-attribution/ipa/ipa-helper:main"
 rcImage: "ghcr.io/private-attribution/ipa/rc:main"
 mpcPort: 443
 shardPort: 1443
+shardCount: 1
 rustLog: "debug,tower_http=error,hyper_util=error,rustls=error,h2=error"
 
