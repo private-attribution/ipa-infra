@@ -20,7 +20,7 @@ spec:
       - name: report-collector
         image: {{ .Values.rcImage }}
         imagePullPolicy: Always
-        command: ["tail", "-f",i "/dev/null"]
+        command: ["tail", "-f", "/dev/null"]
 {{- else }}
 # ignore this file
 {{- end }}
