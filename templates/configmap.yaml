@@ -5,6 +5,10 @@ metadata:
 data:
   network.toml: |
 {{ .Files.Get "config/network.toml" | indent 4 }}
+{{ range $i := until .Values.shardCount }}
+  tls_shard{{ $i }}.pem :-
+{{ $.Files.Get (printf "%s/shard%s/mk.pub" .Release.Name (add $i 1)) | indent 4 }}
+{{ end }}
   tls.pem: |
 {{ printf "config/%s.pem" .Release.Name | .Files.Get | indent 4 }}
   mk.pub: |
