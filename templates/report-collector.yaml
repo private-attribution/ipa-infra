@@ -1,3 +1,4 @@
+{{- if eq .Release.Name "h1" }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -19,4 +20,8 @@ spec:
       - name: report-collector
         image: {{ .Values.rcImage }}
         imagePullPolicy: Always
-        command: ["tail", "-f", "/dev/null"]
+        command: ["tail", "-f",i "/dev/null"]
+{{- else }}
+# ignore this file
+{{- end }}
+
