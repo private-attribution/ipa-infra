@@ -11,6 +11,7 @@ spec:
   serviceName: {{ .Release.Name }}-helper-shard
   replicas: 1 # doesnt work {{ .Values.shardCount | int }}
   minReadySeconds: 10 # by default is 0
+  serviceName: {{ .Release.Name }}-helper-shard
   template:
     metadata:
       labels:
@@ -32,9 +33,9 @@ spec:
             "--shard-index", $(SHARD_INDEX),
             "--shard-port", {{ .Values.shardPort | quote }},
             "--network", "/etc/ipa/network.toml", 
-            "--tls-cert", "/etc/ipa/tls.pem",
+            "--tls-cert", "/etc/ipa/pub/tls.pem",
             "--tls-key", "/etc/ipa/keys/tls.key",
-            "--mk-public-key", "/etc/ipa/mk.pub",
+            "--mk-public-key", "/etc/ipa/pub/mk.pub",
             "--mk-private-key", "/etc/ipa/keys/mk.key"]
           env:
             - name: RUST_LOG
@@ -51,12 +52,17 @@ spec:
           volumeMounts:
             - name: {{ .Release.Name }}-configs
               mountPath: /etc/ipa
+            - name: {{ .Release.Name }}-pubcerts
+              mountPath: /etc/ipa/pub
             - name: {{ .Release.Name }}-keys
               mountPath: /etc/ipa/keys
       volumes:
         - name: {{ .Release.Name }}-configs
           configMap:
             name: {{ .Release.Name }}-configmap
+        - name: {{ .Release.Name }}-pubcerts
+          configMap:
+            name: {{ .Release.Name }}-pubcerts
         - name: {{ .Release.Name }}-keys
           secret:
             secretName: {{ .Release.Name }}-secrets

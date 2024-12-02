@@ -21,6 +21,13 @@ spec:
         image: {{ .Values.rcImage }}
         imagePullPolicy: Always
         command: ["tail", "-f", "/dev/null"]
+        volumeMounts:
+          - name: {{ .Release.Name }}-configs
+            mountPath: /etc/ipa
+      volumes:
+        - name: {{ .Release.Name }}-configs
+          configMap:
+            name: {{ .Release.Name }}-configmap
 {{- else }}
 # ignore this file
 {{- end }}
