@@ -9,7 +9,7 @@ spec:
     matchLabels:
       app: {{ .Release.Name }}-helper-shard
   serviceName: {{ .Release.Name }}-helper-shard
-  replicas: 1 # doesnt work {{ .Values.shardCount | int }}
+  replicas: {{ int .Values.shardCount }}
   minReadySeconds: 10 # by default is 0
   serviceName: {{ .Release.Name }}-helper-shard
   template:
@@ -29,14 +29,14 @@ spec:
           command: ["ipa-helper"]
           args: ["--identity", "{{ trimPrefix "h" .Release.Name }}",
             "--port", {{ .Values.mpcPort | quote }},
-            "--shard-count", "1",
+            "--shard-count", {{ .Values.shardCount | quote }},
             "--shard-index", $(SHARD_INDEX),
             "--shard-port", {{ .Values.shardPort | quote }},
-            "--network", "/etc/ipa/network.toml", 
-            "--tls-cert", "/etc/ipa/pub/tls.pem",
-            "--tls-key", "/etc/ipa/keys/tls.key",
-            "--mk-public-key", "/etc/ipa/pub/mk.pub",
-            "--mk-private-key", "/etc/ipa/keys/mk.key"]
+            "--network", "/etc/ipa/network.toml",
+            "--tls-cert", "/etc/ipa/pub/shard-$(SHARD_INDEX).pem",
+            "--tls-key", "/etc/ipa/keys/shard-$(SHARD_INDEX).key",
+            "--mk-public-key", "/etc/ipa/pub/shard-$(SHARD_INDEX)_mk.pub",
+            "--mk-private-key", "/etc/ipa/keys/shard-$(SHARD_INDEX)_mk.key"]
           env:
             - name: RUST_LOG
               value: {{ .Values.rustLog }}
