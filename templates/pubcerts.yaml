@@ -3,15 +3,18 @@ kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}-pubcerts
 data:
+{{- /* Inside the loop . scope gets overriden so we store files before */}}
 {{- $files := .Files }}
+{{- /* We store just the helper number (id) */}}
 {{- $id := trimPrefix "h" .Release.Name }}
 {{- range $ix := until (int $.Values.shardCount) }}
+  {{- /* Following is the expected path template for each shard config. */}}
   {{- $path := "config/helper%s/shard%d/h%s-helper-shard-%d.h%s-helper-shard.default.svc.cluster.local%s"  }}
   shard-{{ $ix }}.pem: |-
-    {{- $pem_path := printf $path $id $ix $id $ix $id ".pem"  }}
-{{$files.Get $pem_path | indent 4 }}
+    {{- /* We format the path, read it and indent it to match its location. */}}
+{{ printf $path $id $ix $id $ix $id ".pem" | $files.Get | indent 4 }}
   shard-{{ $ix }}_mk.pub: |-
-    {{- $mk_pub_path := printf $path $id $ix $id $ix $id "_mk.pub"  }}
-{{$files.Get $mk_pub_path | indent 4 }}
+    {{- /* Same for match key */}}
+{{ printf $path $id $ix $id $ix $id "_mk.pub" | $files.Get | indent 4 }}
 {{- end }}
 

@@ -1,12 +1,12 @@
 #!/bin/bash
-# Check if the user provided the desired node count as an argument
+# Check if the user provided the desired shard count as an argument
 if [ $# -ne 1 ]; then
-    echo "Error: Please provide the desired node count as an argument."
+    echo "Error: Please provide the desired shard count as an argument."
     exit 1
 fi
-NODE_COUNT=$1
+SHARD_COUNT=$1
 for i in {1..3}; do
     HELM_RELEASE="h$i"
     # Run helm command
-    helm install ${HELM_RELEASE} . --set shardCount=${NODE_COUNT}
+    helm install ${HELM_RELEASE} . --set shardCount=${SHARD_COUNT}
 done
