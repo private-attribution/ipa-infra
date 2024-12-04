@@ -10,6 +10,4 @@ for i in {1..3}; do
     NODEGROUP_NAME="helper$i"
     # Run eksctl command
     eksctl scale nodegroup --cluster=open-helpers --nodes=${NODE_COUNT} --name=${NODEGROUP_NAME} --nodes-min=${NODE_COUNT} --nodes-max=${NODE_COUNT} --wait
-    # Run helm command
-    helm install ${HELM_RELEASE} . --set shardCount=${NODE_COUNT}
 done
