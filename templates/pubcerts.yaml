@@ -1,9 +1,8 @@
 apiVersion: v1
-kind: Secret
+kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}-secrets
-type: Opaque
-stringData:
+  name: {{ .Release.Name }}-pubcerts
+data:
 {{- /* Inside the loop . scope gets overriden so we store files before */}}
 {{- $files := .Files }}
 {{- /* We store just the helper number (id) */}}
@@ -11,10 +10,11 @@ stringData:
 {{- range $ix := until (int $.Values.shardCount) }}
   {{- /* Following is the expected path template for each shard config. */}}
   {{- $path := "config/helper%s/shard%d/h%s-helper-shard-%d.h%s-helper-shard.default.svc.cluster.local%s"  }}
-  shard-{{ $ix }}.key: |-
+  shard-{{ $ix }}.pem: |-
     {{- /* We format the path, read it and indent it to match its location. */}}
-{{ printf $path $id $ix $id $ix $id ".key" | $files.Get | indent 4 }}
-  shard-{{ $ix }}_mk.key: |-
+{{ printf $path $id $ix $id $ix $id ".pem" | $files.Get | indent 4 }}
+  shard-{{ $ix }}_mk.pub: |-
     {{- /* Same for match key */}}
-{{ printf $path $id $ix $id $ix $id "_mk.key" | $files.Get | indent 4 }}
+{{ printf $path $id $ix $id $ix $id "_mk.pub" | $files.Get | indent 4 }}
 {{- end }}
+
