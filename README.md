@@ -27,7 +27,7 @@ cd <IPA project>
 cargo build --bin helper --release --no-default-features --features "web-app real-world-infra compact-gate"
 ```
 
-A script is provided  to generate the keys and certificates for a sharded environment. Choose a number of shards to setup per helper.
+A script is provided to generate the keys and certificates for a sharded environment. Choose a number of shards to setup per helper.
 
 ```
 python3 scripts/create-sharded-conf.py -b <CONFIG_DIR> -s <SHARD_COUNT>
