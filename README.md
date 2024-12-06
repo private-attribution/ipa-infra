@@ -78,20 +78,13 @@ config
 
 # Running IPA on a Cluster
 
-After your Minukube is set or in a Prod bastion, cd into the `ipa-infra` directory and run the following to start a single helper. 
+The workflow to run IPA is a follows. First you setup and prepare a cluster, then you submit a query and finally you scale down the cluster once you're done.
 
-```
-helm install <release-name> .
+## Cluster Preparation
 
-# Example
-helm install h1 .
-```
+Each helper is separated using Helm's `.Release.Name` as a differentiator. This is useful to test all helpers in a single cluster, but shouldn't be necessary for the real case scenario when each helper runs on a separate cluster. You will see Release Name in many templates.
 
-The command should take a few seconds to start a helper.
-
-Each helper is separated using Helm's `.Release.Name` as a differentiator. This is useful to test all helpers in a single cluster, but shouldn't be necessary for the real case scenario when each helper runs on a separate cluster.
-
-You will want to scale the cluster to match the SHARD_COUNT. For example:
+To start your query, first you will want to scale the cluster to match the SHARD_COUNT. For example:
 
 ```
 ./scale.sh 4
@@ -101,10 +94,9 @@ To helm install and uninstall all helpers and report collector you can run.
 
 ```
 ./install.sh <SHARD_COUNT>
-./uninstall.sh
 ```
 
-### Connecting to Report Collector and submitting.
+## Connecting to Report Collector and submitting.
 
 You can use the `connect-to` script to "ssh" into the report collector or any of the helpers. E.g.
 
@@ -113,12 +105,27 @@ You can use the `connect-to` script to "ssh" into the report collector or any of
 ./connect-to.py h2 3
 ```
 
-Once inside the RC you can use the following commands to submit an IPAv2 query:
+Once inside the RC you can use the following commands to submit a IPA hybrid query:
 
 ```
-report_collector gen-ipa-inputs --count 1000 > input-data-1000.txt
+report_collector --output-file ipa_inputs.txt gen-hybrid-inputs --count 100 --max-conversion-value 5 --max-breakdown-key 5 --seed 15913844266827317901 --quiet 
 
-report_collector --network /etc/ipa/network.toml --input-file input-data-1000.txt semi-honest-oprf-ipa-test --max-breakdown-key 64 --per-user-credit-cap 64 --plaintext-match-keys
+in_the_clear --input-file ipa_inputs.txt --output-file ipa_output_in_the_clear.json --quiet
+
+crypto_util hybrid-encrypt --input-file ipa_inputs.txt --output-dir . --network /etc/ipa/network.toml
+
+report_collector --network /etc/ipa/network.toml --output-file ipa_output.json --shard-count 4 --wait 2 malicious-hybrid --count 100 --enc-input-file1 helper1.enc --enc-input-file2 helper2.enc --enc-input-file3 helper3.enc --max-breakdown-key 5 --with-dp 0
+```
+
+Since creating these files takes a very long time, you might want to copy a pre-generated file (from a bastion) into the report collector.
+
+# Scaling down
+
+To scale down the cluster just run the following commands
+
+```
+./uninstall.sh
+./scale 1
 ```
 
 # Utilities
@@ -135,6 +142,37 @@ This gets details about all pods. You can use this to know if the server is up a
 kubectl logs -l app=h1-helper-shard --tail=100 -f
 kubectl logs -l app=h2-helper-shard --tail=100 -f
 ```
+
+The following prints the nodegroup, useful to check the current scale of the system:
+
+```
+eksctl get nodegroup --cluster open-helpers
+```
+
+Cd into the `ipa-infra` directory and run the following to start a single helper. 
+
+```
+helm install <release-name> .
+
+# Example
+helm install h1 .
+```
+
+The command should take a few seconds to start a helper with the default `values.yaml`
+
+# Creating a custom Docker
+
+The following instructions pertain the IPA project but since Docker is used by the K8s I also included some sample instructions here. Remember to replace `<TAG>` with something useful to you.
+
+```
+docker build -t ghcr.io/private-attribution/ipa/ipa-helper:<TAG> -f docker/helper.Dockerfile .
+docker build -t ghcr.io/private-attribution/ipa/rc:<TAG> -f docker/report_collector.Dockerfile .
+
+docker push ghcr.io/private-attribution/ipa/ipa-helper:<TAG>
+docker push ghcr.io/private-attribution/ipa/rc:<TAG>
+```
+
+After this you will need to modify `values.yaml` to use your docker image.
 
 # Prod Cluster creation
 
