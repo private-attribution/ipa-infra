@@ -18,6 +18,11 @@ managedNodeGroups:
     labels: { releaseName: h3 }
     instanceType: c6id.8xlarge
     desiredCapacity: 1
+  - name: rc
+    labels: { releaseName: rc }
+    instanceType: c6id.8xlarge
+    volumeSize: 2000
+    desiredCapacity: 1
 
 iam:
   withOIDC: true

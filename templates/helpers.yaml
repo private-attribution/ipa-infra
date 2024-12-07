@@ -1,3 +1,4 @@
+{{- if ne .Release.Name "rc" }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -66,3 +67,6 @@ spec:
         - name: {{ .Release.Name }}-keys
           secret:
             secretName: {{ .Release.Name }}-secrets
+{{- else }}
+# ignore this file
+{{- end }}

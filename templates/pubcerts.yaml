@@ -1,3 +1,4 @@
+{{- if ne .Release.Name "rc" }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -16,5 +17,9 @@ data:
   shard-{{ $ix }}_mk.pub: |-
     {{- /* Same for match key */}}
 {{ printf $path $id $ix $id $ix $id "_mk.pub" | $files.Get | indent 4 }}
+{{- end }}
+
+{{- else }}
+# ignore this file
 {{- end }}
 
