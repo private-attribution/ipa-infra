@@ -31,6 +31,7 @@ spec:
           command: ["ipa-helper"]
           args: ["--identity", "{{ trimPrefix "h" .Release.Name }}",
             "--port", {{ .Values.mpcPort | quote }},
+            "--log-file", "/var/log/ipa.log",
             "--shard-count", {{ .Values.shardCount | quote }},
             "--shard-index", $(SHARD_INDEX),
             "--shard-port", {{ .Values.shardPort | quote }},
