@@ -5,6 +5,8 @@ metadata:
   name: open-helpers
   region: us-west-2
 
+# We had to increase the instance type because of memory usage. IPA protocol
+# improvements should bring memory ussage down.
 managedNodeGroups:
   - name: helper1
     labels: { releaseName: h1 }
