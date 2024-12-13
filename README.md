@@ -132,18 +132,31 @@ To scale down the cluster just run the following commands
 
 Following are some example commands you can try out.
 
+The following gets details about all pods. You can use this to know if the server is up and running or understand any problems.
+
 ```
 kubectl describe pods
 ```
 
-This gets details about all pods. You can use this to know if the server is up and running or understand any problems.
+The next one is used to get information about the nodes (the hosts) that run IPA code.
 
 ```
+kubectl describe nodes
+```
+
+The following commands are examples on how to get logs about different shards and the entirety of a helper.
+
+```
+kubectl logs h1-helper-shard-0 --tail=100 -f
+kubectl logs h2-helper-shard-19 --tail=10000 -f
+
 kubectl logs -l app=h1-helper-shard --tail=100 -f
 kubectl logs -l app=h2-helper-shard --tail=100 -f
 ```
 
-The following prints the nodegroup, useful to check the current scale of the system:
+For the last commands you might need to add the option `--max-log-requests=<shard-count>`.
+
+The following prints the EKS node groups, useful to check the current scale of the system or instance types.
 
 ```
 eksctl get nodegroup --cluster open-helpers
@@ -160,11 +173,21 @@ helm install h1 .
 
 The command should take a few seconds to start a helper with the default `values.yaml`
 
-# Creating a custom Docker
-
-The following instructions pertain the IPA project but since Docker is used by the K8s I also included some sample instructions here. Remember to replace `<TAG>` with something useful to you.
+If you need to copy files, say from the report collector image to the bastion (your current host), you can run:
 
 ```
+kubectl cp helper3_10M.enc default/report-collector-deployment-686b69c48b-7fq9j:/helper3_10M.enc
+```
+
+# Creating a custom Docker
+
+The following instructions pertain the IPA project but since the Docker images are also used by this project, sample instructions are included here. 
+
+Remember to replace `<TAG>` with something useful to you.
+
+```
+cd <ipa project>
+
 docker build -t ghcr.io/private-attribution/ipa/ipa-helper:<TAG> -f docker/helper.Dockerfile .
 docker build -t ghcr.io/private-attribution/ipa/rc:<TAG> -f docker/report_collector.Dockerfile .
 
@@ -191,6 +214,37 @@ On way to apply Instance Type changes require is to modify the EC2 Launch Templa
 *What if my cluster is stuck on a IPA Query?*
 
 You can simply restart it using `./restart-helpers.sh `
+
+## DNS
+
+K8s DNS (CoreDNS) presented some challenges, hence including some helpful commands here:
+
+If you want t edit the DNS config
+
+```
+kubectl -n kube-system edit configmap coredns
+```
+
+The following commands get the configuration.
+
+```
+kubectl get pods -n kube-system
+
+kubectl get configmap coredns -n kube-system -o yaml
+
+aws eks describe-addon --cluster-name open-helpers --addon-name coredns
+```
+
+Restarting DNS:
+```
+kubectl rollout restart -n kube-system deployment/coredns
+```
+
+Scaling the DNS pods:
+```
+kubectl scale deployment.apps/coredns -n kube-system --replicas=0
+kubectl scale deployment.apps/coredns -n kube-system --replicas=20
+```
 
 # Local Setup
 
