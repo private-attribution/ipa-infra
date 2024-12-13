@@ -11,5 +11,5 @@ SHARD_COUNT=$1
 for i in {1..3}; do
     HELM_RELEASE="h$i"
     # Run helm command
-    helm install ${HELM_RELEASE} . --set shardCount=${SHARD_COUNT}
+    helm upgrade ${HELM_RELEASE} . --set shardCount=${SHARD_COUNT}
 done
