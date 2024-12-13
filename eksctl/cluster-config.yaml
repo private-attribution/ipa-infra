@@ -8,21 +8,22 @@ metadata:
 managedNodeGroups:
   - name: helper1
     labels: { releaseName: h1 }
-    instanceType: c6id.8xlarge
+    instanceType: c6id.12xlarge
     desiredCapacity: 1
   - name: helper2
     labels: { releaseName: h2 }
-    instanceType: c6id.8xlarge
+    instanceType: c6id.12xlarge
     desiredCapacity: 1
   - name: helper3
     labels: { releaseName: h3 }
-    instanceType: c6id.8xlarge
+    instanceType: c6id.12xlarge
     desiredCapacity: 1
   - name: rc
     labels: { releaseName: rc }
     instanceType: c6id.8xlarge
     volumeSize: 2000
     desiredCapacity: 1
+availabilityZones: ['us-east-1a']
 
 iam:
   withOIDC: true
