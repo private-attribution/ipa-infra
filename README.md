@@ -207,7 +207,23 @@ If you want to make changes to the cluster, you can deploy a cluster upgrade.
 eksctl upgrade cluster -f eksctl/cluster-config.yaml
 ```
 
-On way to apply Instance Type changes require is to modify the EC2 Launch Template associated with that nodegroup.
+If you want to modify the Helper Instance Types there are 2 options, one way is
+to modify the EC2 Launch Template associated with that nodegroup. Another way 
+is to delete and create the node groups using EKSCTL:
+
+```
+eksctl delete nodegroup -f eksctl/cluster-config.yaml --include="helper*" --exclude="rc"
+```
+
+The above command will thankfully only do a dryrun, be sure to check what it's 
+planning to do and re-run with `-approve`. Then, to re-create the node groups:
+
+```
+eksctl create nodegroup -f eksctl/cluster-config.yaml --include="helper*" --exclude="rc"
+```
+
+Check the [EKSCTL](https://eksctl.io/usage/creating-and-managing-clusters/) 
+docs for more information.
 
 # Troubleshooting
 
@@ -245,6 +261,28 @@ Scaling the DNS pods:
 kubectl scale deployment.apps/coredns -n kube-system --replicas=0
 kubectl scale deployment.apps/coredns -n kube-system --replicas=20
 ```
+
+## Github Docker Repository
+
+We use Github repository (GHCR) to keep Docker images used by the templates in 
+this package which are automatically created on each push to main using Github 
+Actions. GHCR [requires a token](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry) 
+to be able to pull images. 
+
+The template expects the GHCR token to be stored in `config/ghcr_auth.json` and
+be of the following form:
+
+```
+{"auths":{"ghcr.io":{"auth":"<USERNAME + TOKEN>"}}}
+``
+
+To generate that value you will need to concatenate your username with your 
+token and base64 the results:
+
+```
+echo -n "<username>:<token>" | base64
+```
+
 
 # Local Setup
 
