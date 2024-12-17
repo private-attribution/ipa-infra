@@ -7,6 +7,7 @@ metadata:
 
 # We had to increase the instance type because of memory usage. IPA protocol
 # improvements should bring memory ussage down.
+# Right now, for 1B spread across 50 shards we use 30gb of memory
 managedNodeGroups:
   - name: helper1
     labels: { releaseName: h1 }
