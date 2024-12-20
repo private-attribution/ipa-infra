@@ -22,8 +22,6 @@ spec:
       terminationGracePeriodSeconds: 10
       nodeSelector:
         releaseName: {{ .Release.Name }}
-      imagePullSecrets:
-        - name: {{ .Release.Name }}-ghcr
       containers:
         - name: {{ .Release.Name }}-helper-shard
           image: {{ .Values.helperImage }}

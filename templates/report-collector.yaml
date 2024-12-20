@@ -14,8 +14,6 @@ spec:
       labels:
         app: report-collector
     spec:
-      imagePullSecrets:
-        - name: {{ .Release.Name }}-ghcr
       nodeSelector:
         releaseName: rc
       containers:
