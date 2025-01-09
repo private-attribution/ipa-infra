@@ -5,6 +5,10 @@ metadata:
   name: {{ .Release.Name }}-helper-shard
   labels:
     app: {{ .Release.Name }}-helper-shard
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/path: /metrics
+    prometheus.io/port: "8080"
 spec:
   selector:
     matchLabels:
