@@ -1,0 +1,34 @@
+{{- if eq .Release.Name "prometheus" }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus-deployment
+  labels:
+    app: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      nodeSelector:
+        releaseName: prometheus
+      containers:
+        - name: prometheus
+          image: {{ .Values.prometheusImage }}
+          ports:
+            - containerPort: 9090
+          volumeMounts:
+            - name: {{ .Release.Name }}-configs
+              mountPath: /etc/prometheus
+      volumes:
+        - name: {{ .Release.Name }}-configs
+          configMap:
+            name: {{ .Release.Name }}-configmap
+{{- else }}
+# ignore this file
+{{- end }}
+
